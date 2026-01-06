@@ -1,0 +1,24 @@
+<!--
+  Landing page background illustration.
+  Purpose: a local background image so the landing page meets the "background image" requirement.
+-->
+<svg width="1600" height="900" viewBox="0 0 1600 900" fill="none" xmlns="http://www.w3.org/2000/svg">
+  <defs>
+    <radialGradient id="r" cx="0" cy="0" r="1" gradientUnits="userSpaceOnUse" gradientTransform="translate(500 300) rotate(35) scale(1100 800)">
+      <stop offset="0" stop-color="#0ea5e9" stop-opacity="0.35"/>
+      <stop offset="0.35" stop-color="#6366f1" stop-opacity="0.22"/>
+      <stop offset="1" stop-color="#0f172a" stop-opacity="1"/>
+    </radialGradient>
+    <linearGradient id="l" x1="0" y1="0" x2="1" y2="1">
+      <stop offset="0" stop-color="#0f172a"/>
+      <stop offset="1" stop-color="#020617"/>
+    </linearGradient>
+  </defs>
+  <rect width="1600" height="900" fill="url(#l)"/>
+  <rect width="1600" height="900" fill="url(#r)"/>
+  <g opacity="0.25">
+    <path d="M120 720C280 560 420 520 560 560C700 600 860 520 980 420C1100 320 1260 240 1480 260" stroke="#e2e8f0" stroke-width="2"/>
+    <path d="M120 780C300 620 460 600 600 640C740 680 900 620 1020 520C1140 420 1300 320 1480 340" stroke="#e2e8f0" stroke-width="2"/>
+    <path d="M120 660C260 520 400 460 540 500C680 540 840 460 960 360C1080 260 1240 180 1480 200" stroke="#e2e8f0" stroke-width="2"/>
+  </g>
+</svg>

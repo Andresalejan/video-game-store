@@ -1,0 +1,21 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+/*
+  Tailwind entry CSS.
+
+  Purpose:
+  - Pull in Tailwind's base/components/utilities layers.
+  - Add a tiny layout reset so pages can use `min-h-full` reliably.
+*/
+
+html,
+body,
+#root {
+  height: 100%;
+}
+
+body {
+  margin: 0;
+}

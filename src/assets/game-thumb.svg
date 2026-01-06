@@ -1,0 +1,21 @@
+<!--
+  Placeholder product thumbnail.
+  Purpose: a lightweight local image for product cards (no external asset hosting needed).
+-->
+<svg width="640" height="360" viewBox="0 0 640 360" fill="none" xmlns="http://www.w3.org/2000/svg">
+  <defs>
+    <linearGradient id="g" x1="0" y1="0" x2="1" y2="1">
+      <stop offset="0" stop-color="#0f172a"/>
+      <stop offset="1" stop-color="#334155"/>
+    </linearGradient>
+  </defs>
+  <rect width="640" height="360" rx="24" fill="url(#g)"/>
+  <rect x="120" y="100" width="400" height="160" rx="20" fill="#111827" opacity="0.6"/>
+  <path d="M262 175c0-9.389 7.611-17 17-17h82c9.389 0 17 7.611 17 17v10c0 9.389-7.611 17-17 17h-82c-9.389 0-17-7.611-17-17v-10Z" fill="#e2e8f0" opacity="0.85"/>
+  <circle cx="420" cy="178" r="10" fill="#e2e8f0" opacity="0.85"/>
+  <circle cx="450" cy="194" r="10" fill="#e2e8f0" opacity="0.85"/>
+  <circle cx="450" cy="162" r="10" fill="#e2e8f0" opacity="0.85"/>
+  <circle cx="480" cy="178" r="10" fill="#e2e8f0" opacity="0.85"/>
+  <path d="M292 184h18" stroke="#0f172a" stroke-width="6" stroke-linecap="round"/>
+  <path d="M301 175v18" stroke="#0f172a" stroke-width="6" stroke-linecap="round"/>
+</svg>
