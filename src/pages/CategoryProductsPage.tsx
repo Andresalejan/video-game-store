@@ -1,5 +1,6 @@
 import { useMemo, useState } from "react";
 import { Link, useLocation, useParams } from "react-router-dom";
+import { useNavigate } from "react-router-dom";
 import { AppHeader } from "../components/AppHeader";
 import { CartOverlay } from "../components/CartOverlay";
 import { products, categories } from "../data/products";
@@ -17,13 +18,11 @@ function formatUsd(value: number) {
 }
 
 export function CategoryProductsPage() {
+    const navigate = useNavigate();
   const { category: rawCategory } = useParams();
   const decodedCategory = rawCategory ? decodeURIComponent(rawCategory) : "";
 
   const location = useLocation();
-  const navState = location.state as { from?: string } | null;
-  const fromPath = navState?.from;
-
   const dispatch = useAppDispatch();
   const cartItems = useAppSelector(selectCartItems);
   const [justAdded, setJustAdded] = useState<Set<string>>(new Set());
@@ -39,25 +38,7 @@ export function CategoryProductsPage() {
     return products.filter((p) => p.category === decodedCategory);
   }, [decodedCategory, isKnownCategory]);
 
-  const backLink = useMemo(() => {
-    if (typeof fromPath !== "string" || fromPath.length === 0) {
-      return { to: "/categories", label: "Back to Categories" };
-    }
-
-    if (fromPath === "/products") {
-      return { to: fromPath, label: "Back to Games" };
-    }
-
-    if (fromPath === "/categories" || fromPath.startsWith("/games/")) {
-      return { to: "/categories", label: "Back to Categories" };
-    }
-
-    if (fromPath === "/") {
-      return { to: fromPath, label: "Back Home" };
-    }
-
-    return { to: fromPath, label: "Back" };
-  }, [fromPath]);
+  // Remove backLink logic, use Back button instead
 
   return (
     <div className="min-h-full bg-slate-950 relative">
@@ -78,7 +59,10 @@ export function CategoryProductsPage() {
         </div>
         <CartOverlay isOpen={isCartOpen} onClose={() => setIsCartOpen(false)} />
 
-        <main className="mx-auto max-w-5xl px-4 py-8 animate-slide-up">
+        <main
+          key={decodedCategory}
+          className="mx-auto max-w-5xl px-4 py-8 animate-slide-up"
+        >
           <div className="flex items-center justify-between gap-4">
             <div>
               <h2 className="text-2xl font-semibold text-white">
@@ -92,12 +76,13 @@ export function CategoryProductsPage() {
             </div>
 
             <div className="flex items-center gap-4">
-              <Link
-                to={backLink.to}
-                className="text-sm font-medium text-slate-300 hover:text-white transition-colors"
+              <button
+                type="button"
+                onClick={() => navigate(-1)}
+                className="text-sm font-medium text-slate-300 hover:text-white transition-colors px-3 py-1 rounded-lg border border-slate-700/40 bg-slate-900/80"
               >
-                {backLink.label}
-              </Link>
+                ← Back
+              </button>
             </div>
           </div>
 

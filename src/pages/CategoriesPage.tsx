@@ -1,10 +1,11 @@
-import { Link } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
 import { AppHeader } from "../components/AppHeader";
 import { categories } from "../data/products";
 
 const productsBgUrl = `${import.meta.env.BASE_URL}cyberpunk-products.png`;
 
 export function CategoriesPage() {
+  const navigate = useNavigate();
   return (
     <div className="min-h-full bg-slate-950 relative">
       {/* Background Image */}
@@ -29,12 +30,13 @@ export function CategoriesPage() {
               </p>
             </div>
 
-            <Link
-              to="/products"
-              className="text-sm font-medium text-slate-300 hover:text-white transition-colors"
+            <button
+              type="button"
+              onClick={() => navigate(-1)}
+              className="text-sm font-medium text-slate-300 hover:text-white transition-colors px-3 py-1 rounded-lg border border-slate-700/40 bg-slate-900/80"
             >
-              Back to Games
-            </Link>
+              ← Back
+            </button>
           </div>
 
           <div className="mt-8 grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-3">
