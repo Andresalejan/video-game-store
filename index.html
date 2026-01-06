@@ -4,6 +4,25 @@
     <meta charset="UTF-8" />
     <link rel="icon" type="image/svg+xml" href="/video-game-store/vite.svg" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <script>
+      // GitHub Pages SPA fallback: if we were redirected from /404.html with a
+      // stored path, restore it so React Router can handle the route.
+      (function () {
+        var params = new URLSearchParams(window.location.search);
+        var p = params.get("p");
+        var q = params.get("q");
+        if (!p) return;
+
+        // When served from https://<user>.github.io/<repo>/, pathname here is
+        // typically "/<repo>/". We want to rebuild "/<repo><p>".
+        var basePath = window.location.pathname.replace(/\/$/, "");
+        var restoredPath = p.startsWith("/") ? p : "/" + p;
+        var restoredSearch = q ? "?" + q : "";
+        var restoredUrl = basePath + restoredPath + restoredSearch + window.location.hash;
+
+        window.history.replaceState(null, "", restoredUrl);
+      })();
+    </script>
     <title>game-store</title>
     <script type="module" crossorigin src="/video-game-store/assets/index-ByEs-Yux.js"></script>
     <link rel="stylesheet" crossorigin href="/video-game-store/assets/index-CKfFccrL.css">
