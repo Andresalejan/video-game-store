@@ -1,39 +1,64 @@
-/**
- * Landing page.
- *
- * Requirements it satisfies:
- * - Background image
- * - Company name + short paragraph
- * - "Get Started" button linking to product listing page
- */
+import { useNavigate } from "react-router-dom";
+import { RainOverlay } from "../components/RainOverlay.tsx";
 
-import { Link } from "react-router-dom";
-import landingBg from "../assets/landing-bg.svg";
+const landingBgUrl = `${import.meta.env.BASE_URL}cyberpunk-city.png`;
 
 export function LandingPage() {
+  const navigate = useNavigate();
+
+  const handleStartClick = (e: React.MouseEvent) => {
+    e.preventDefault();
+    const content = document.querySelector('.landing-content');
+    if (content) {
+      content.classList.add('animate-page-exit');
+      setTimeout(() => {
+        navigate('/products');
+      }, 300);
+    }
+  };
+
   return (
-    <div
-      className="min-h-full bg-slate-950 bg-cover bg-center"
-      style={{ backgroundImage: `url(${landingBg})` }}
-    >
-      <div className="min-h-full bg-slate-950/70">
-        <div className="mx-auto flex min-h-full max-w-5xl flex-col justify-center px-4 py-16">
-          <h1 className="text-4xl font-bold tracking-tight text-white sm:text-5xl">
-            Pixel Paradise
-          </h1>
-          <p className="mt-4 max-w-2xl text-base leading-relaxed text-slate-200">
-            We curate great games you can jump into fast — from big-budget action
-            to cozy indie gems. Browse by genre, add titles to your cart, and
-            adjust quantities before checkout.
+    <div className="relative min-h-screen overflow-hidden bg-slate-950">
+      {/* Backdrop */}
+      <div
+        className="absolute inset-0 bg-cover bg-center animate-fade-in-bg"
+        style={{ backgroundImage: `url(${landingBgUrl})` }}
+        aria-hidden="true"
+      />
+
+      {/* Rain Animation */}
+      <RainOverlay />
+
+      {/* Contrast overlay */}
+      <div
+        className="absolute inset-0 bg-gradient-to-b from-slate-950/60 via-slate-950/60 to-slate-950/80 animate-fade-in-overlay"
+        style={{ zIndex: 2 }}
+        aria-hidden="true"
+      />
+
+      {/* Content */}
+      <div className="landing-content relative z-10 mx-auto flex min-h-screen max-w-5xl flex-col items-center justify-center px-4 py-16 text-center animate-fade-in">
+        <p className="text-xs font-semibold tracking-[0.35em] text-slate-200/80">
+          CYBERPUNK GAME STORE
+        </p>
+        <h1 className="mt-4 text-4xl font-bold tracking-tight text-white sm:text-6xl">
+          Pixel Paradise
+        </h1>
+        <p className="mt-3 max-w-xl text-sm leading-relaxed text-slate-200/90 sm:text-base">
+          Enter the neon district. Browse games, build your cart, and check out.
+        </p>
+
+        <div className="mt-10">
+          <button
+            onClick={handleStartClick}
+            className="group inline-flex items-center justify-center rounded-md border border-slate-200/20 bg-slate-900 px-10 py-4 text-base font-semibold tracking-[0.25em] text-white backdrop-blur hover:bg-slate-800 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-white transition-colors duration-200"
+            aria-label="Start browsing products"
+          >
+            START
+          </button>
+          <p className="mt-4 text-xs text-slate-200/70">
+            Press START to continue
           </p>
-          <div className="mt-8">
-            <Link
-              to="/products"
-              className="inline-flex items-center rounded-md bg-white px-5 py-3 text-sm font-semibold text-slate-900 hover:bg-slate-100"
-            >
-              Get Started
-            </Link>
-          </div>
         </div>
       </div>
     </div>

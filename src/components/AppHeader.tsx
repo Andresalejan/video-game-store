@@ -19,9 +19,9 @@ export function AppHeader() {
   const onCartPage = location.pathname.startsWith("/cart");
 
   return (
-    <header className="border-b border-slate-200 bg-white">
+    <header className="border-b border-slate-700/30 bg-slate-900/90 backdrop-blur">
       <div className="mx-auto flex max-w-5xl items-center justify-between px-4 py-4">
-        <Link to="/products" className="text-lg font-semibold text-slate-900">
+        <Link to="/products" className="text-lg font-semibold text-white tracking-wide">
           Pixel Paradise
         </Link>
 
@@ -29,19 +29,19 @@ export function AppHeader() {
           {onCartPage ? (
             <Link
               to="/products"
-              className="text-sm font-medium text-slate-700 hover:text-slate-900"
+              className="text-sm font-medium text-slate-300 hover:text-white transition-colors"
             >
               Continue Shopping
             </Link>
           ) : (
             <Link
               to="/cart"
-              className="relative inline-flex items-center gap-2 text-sm font-medium text-slate-700 hover:text-slate-900"
+              className="relative inline-flex items-center gap-2 text-sm font-medium text-slate-300 hover:text-white transition-colors"
               aria-label={`Shopping cart, ${totalItems} items`}
             >
               <CartIcon className="h-6 w-6" />
               <span className="hidden sm:inline">Cart</span>
-              <span className="absolute -right-2 -top-2 inline-flex h-5 min-w-5 items-center justify-center rounded-full bg-slate-900 px-1 text-xs font-semibold text-white">
+              <span className="absolute -right-2 -top-2 inline-flex h-5 min-w-5 items-center justify-center rounded-full bg-blue-600 px-1 text-xs font-semibold text-white">
                 {totalItems}
               </span>
             </Link>
@@ -49,12 +49,12 @@ export function AppHeader() {
 
           {onCartPage && (
             <div
-              className="relative inline-flex items-center gap-2 text-sm font-medium text-slate-700"
+              className="relative inline-flex items-center gap-2 text-sm font-medium text-slate-300"
               aria-label={`Shopping cart, ${totalItems} items`}
             >
               <CartIcon className="h-6 w-6" />
               <span className="hidden sm:inline">Cart</span>
-              <span className="absolute -right-2 -top-2 inline-flex h-5 min-w-5 items-center justify-center rounded-full bg-slate-900 px-1 text-xs font-semibold text-white">
+              <span className="absolute -right-2 -top-2 inline-flex h-5 min-w-5 items-center justify-center rounded-full bg-blue-600 px-1 text-xs font-semibold text-white">
                 {totalItems}
               </span>
             </div>

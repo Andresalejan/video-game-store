@@ -22,16 +22,18 @@ import { CartPage } from "./pages/CartPage";
 
 export default function App() {
   return (
-    <BrowserRouter basename={import.meta.env.BASE_URL}>
-      <Routes>
-        {/* Landing */}
-        <Route path="/" element={<LandingPage />} />
-        {/* Store pages */}
-        <Route path="/products" element={<ProductsPage />} />
-        <Route path="/cart" element={<CartPage />} />
-        {/* Any unknown URL goes back to landing */}
-        <Route path="*" element={<Navigate to="/" replace />} />
-      </Routes>
-    </BrowserRouter>
+    <div className="min-h-screen bg-slate-950">
+      <BrowserRouter basename={import.meta.env.BASE_URL}>
+        <Routes>
+          {/* Landing */}
+          <Route path="/" element={<LandingPage />} />
+          {/* Store pages */}
+          <Route path="/products" element={<ProductsPage />} />
+          <Route path="/cart" element={<CartPage />} />
+          {/* Any unknown URL goes back to landing */}
+          <Route path="*" element={<Navigate to="/" replace />} />
+        </Routes>
+      </BrowserRouter>
+    </div>
   );
 }

@@ -13,6 +13,8 @@ import { products, categories } from "../data/products";
 import { useAppDispatch } from "../app/hooks";
 import { addToCart } from "../features/cart/cartSlice";
 
+const productsBgUrl = `${import.meta.env.BASE_URL}cyberpunk-products.png`;
+
 function formatUsd(value: number) {
   return new Intl.NumberFormat("en-US", {
     style: "currency",
@@ -32,55 +34,73 @@ export function ProductsPage() {
   }, []);
 
   return (
-    <div className="min-h-full bg-slate-50">
-      <AppHeader />
-      <main className="mx-auto max-w-5xl px-4 py-8">
-        <h2 className="text-2xl font-semibold text-slate-900">
-          Video Game Store
-        </h2>
-        <p className="mt-2 text-sm text-slate-600">
-          Pick a category and add games to your cart.
-        </p>
+    <div className="min-h-full bg-slate-950 relative">
+      {/* Background Image */}
+      <div
+        className="fixed inset-0 bg-cover bg-center"
+        style={{ backgroundImage: `url(${productsBgUrl})` }}
+        aria-hidden="true"
+      />
+      
+      {/* Dark overlay for readability */}
+      <div
+        className="fixed inset-0 bg-slate-950/80"
+        aria-hidden="true"
+      />
 
-        <div className="mt-8 space-y-10">
-          {grouped.map((group) => (
-            <section key={group.category}>
-              <h3 className="text-lg font-semibold text-slate-900">
-                {group.category}
-              </h3>
-              <div className="mt-4 grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-3">
-                {group.items.map((product) => (
-                  <div
-                    key={product.id}
-                    className="rounded-lg border border-slate-200 bg-white p-4"
-                  >
-                    <img
-                      src={product.image}
-                      alt={product.name}
-                      className="h-28 w-full rounded-md bg-slate-100 object-cover"
-                    />
-                    <div className="mt-3">
-                      <div className="font-semibold text-slate-900">
-                        {product.name}
-                      </div>
-                      <div className="mt-1 text-sm text-slate-600">
-                        {formatUsd(product.price)}
-                      </div>
-                    </div>
-                    <button
-                      type="button"
-                      className="mt-4 inline-flex w-full items-center justify-center rounded-md bg-slate-900 px-4 py-2 text-sm font-semibold text-white hover:bg-slate-800"
-                      onClick={() => dispatch(addToCart(product))}
-                    >
-                      Add to Cart
-                    </button>
-                  </div>
-                ))}
-              </div>
-            </section>
-          ))}
+      {/* Content */}
+      <div className="relative z-10">
+        <div className="animate-slide-down">
+          <AppHeader />
         </div>
-      </main>
+        <main className="mx-auto max-w-5xl px-4 py-8 animate-slide-up">
+          <h2 className="text-2xl font-semibold text-white">
+            Video Game Store
+          </h2>
+          <p className="mt-2 text-sm text-slate-300">
+            Pick a category and add games to your cart.
+          </p>
+
+          <div className="mt-8 space-y-10">
+            {grouped.map((group) => (
+              <section key={group.category}>
+                <h3 className="text-lg font-semibold text-white">
+                  {group.category}
+                </h3>
+                <div className="mt-4 grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-3">
+                  {group.items.map((product) => (
+                    <div
+                      key={product.id}
+                      className="rounded-lg border border-slate-700/50 bg-slate-900/90 backdrop-blur p-4"
+                    >
+                      <img
+                        src={product.image}
+                        alt={product.name}
+                        className="h-28 w-full rounded-md bg-slate-800 object-cover"
+                      />
+                      <div className="mt-3">
+                        <div className="font-semibold text-white">
+                          {product.name}
+                        </div>
+                        <div className="mt-1 text-sm text-slate-300">
+                          {formatUsd(product.price)}
+                        </div>
+                      </div>
+                      <button
+                        type="button"
+                        className="mt-4 inline-flex w-full items-center justify-center rounded-md bg-blue-600 px-4 py-2 text-sm font-semibold text-white hover:bg-blue-500 transition-colors"
+                        onClick={() => dispatch(addToCart(product))}
+                      >
+                        Add to Cart
+                      </button>
+                    </div>
+                  ))}
+                </div>
+              </section>
+            ))}
+          </div>
+        </main>
+      </div>
     </div>
   );
 }
