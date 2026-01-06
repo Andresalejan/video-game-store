@@ -8,12 +8,12 @@
  */
 
 import { useMemo, useState } from "react";
-import { Link } from "react-router-dom";
+import { Link, useLocation } from "react-router-dom";
 import { AppHeader } from "../components/AppHeader";
 import { CartOverlay } from "../components/CartOverlay";
 import { products, categories } from "../data/products";
 import { useAppDispatch, useAppSelector } from "../app/hooks";
-import { addToCart } from "../features/cart/cartSlice";
+import { addToCart, removeFromCart } from "../features/cart/cartSlice";
 import { selectCartItems } from "../features/cart/selectors";
 
 const productsBgUrl = `${import.meta.env.BASE_URL}cyberpunk-products.png`;
@@ -28,6 +28,7 @@ function formatUsd(value: number) {
 export function ProductsPage() {
   const dispatch = useAppDispatch();
   const cartItems = useAppSelector(selectCartItems);
+  const location = useLocation();
   const [justAdded, setJustAdded] = useState<Set<string>>(new Set());
   const [isCartOpen, setIsCartOpen] = useState(false);
 
@@ -73,6 +74,7 @@ export function ProductsPage() {
               <section key={group.category}>
                 <Link
                   to={`/categories/${encodeURIComponent(group.category)}`}
+                  state={{ from: location.pathname }}
                   className="group inline-block"
                   aria-label={`View all ${group.category} games`}
                   title={`View all ${group.category} games`}
@@ -88,7 +90,11 @@ export function ProductsPage() {
                     const wasJustAdded = justAdded.has(product.id);
                     
                     const handleAddToCart = () => {
-                      if (isInCart) return;
+                      if (isInCart) {
+                        dispatch(removeFromCart(product.id));
+                        return;
+                      }
+
                       dispatch(addToCart(product));
                       setJustAdded(prev => new Set(prev).add(product.id));
                       setTimeout(() => {
@@ -113,6 +119,7 @@ export function ProductsPage() {
                         {/* Category badge */}
                         <Link
                           to={`/categories/${encodeURIComponent(product.category)}`}
+                          state={{ from: location.pathname }}
                           className="absolute top-2 right-2 z-10 px-3 py-1 rounded-full bg-gradient-to-r from-purple-600 to-pink-600 text-xs font-bold text-white shadow-lg hover:from-purple-500 hover:to-pink-500 transition-colors"
                           aria-label={`View category ${product.category}`}
                         >
@@ -120,7 +127,12 @@ export function ProductsPage() {
                         </Link>
                         
                         {/* Image with frame */}
-                        <div className="relative rounded-lg overflow-hidden border-2 border-purple-500/40 group-hover:border-purple-400/60 transition-colors h-48 bg-gradient-to-br from-slate-800 to-slate-900">
+                        <Link
+                          to={`/games/${encodeURIComponent(product.id)}`}
+                          state={{ from: location.pathname }}
+                          className="block relative rounded-lg overflow-hidden border-2 border-purple-500/40 group-hover:border-purple-400/60 transition-colors h-48 bg-gradient-to-br from-slate-800 to-slate-900"
+                          aria-label={`View ${product.name} details`}
+                        >
                           <img
                             src={product.image}
                             alt={product.name}
@@ -128,13 +140,18 @@ export function ProductsPage() {
                           />
                           {/* Gradient overlay */}
                           <div className="absolute inset-0 bg-gradient-to-t from-slate-900/40 to-transparent pointer-events-none"></div>
-                        </div>
+                        </Link>
                         
                         {/* Card details */}
                         <div className="mt-4 space-y-3">
-                          <div className="font-bold text-lg text-white group-hover:text-transparent group-hover:bg-clip-text group-hover:bg-gradient-to-r group-hover:from-purple-400 group-hover:to-pink-400 transition-all">
+                          <Link
+                            to={`/games/${encodeURIComponent(product.id)}`}
+                            state={{ from: location.pathname }}
+                            className="block font-bold text-lg text-white group-hover:text-transparent group-hover:bg-clip-text group-hover:bg-gradient-to-r group-hover:from-purple-400 group-hover:to-pink-400 transition-all"
+                            aria-label={`View ${product.name} details`}
+                          >
                             {product.name}
-                          </div>
+                          </Link>
                           
                           {/* Price display with gem design */}
                           <div className="flex items-center justify-between bg-gradient-to-r from-purple-950/50 to-blue-950/50 rounded-lg p-3 border border-purple-500/30">
@@ -147,10 +164,9 @@ export function ProductsPage() {
                           {/* Add to cart button */}
                           <button
                             type="button"
-                            disabled={isInCart}
                             className={`w-full py-3 px-4 rounded-lg font-bold text-sm uppercase tracking-wide shadow-lg transition-all duration-300 ${
                               isInCart
-                                ? 'bg-gradient-to-r from-green-600 to-emerald-600 cursor-not-allowed scale-100'
+                                ? 'bg-gradient-to-r from-green-600 to-emerald-600 hover:from-green-500 hover:to-emerald-500 hover:shadow-emerald-500/30 hover:scale-105 active:scale-95'
                                 : 'bg-gradient-to-r from-purple-600 to-pink-600 hover:from-purple-500 hover:to-pink-500 hover:shadow-purple-500/50 hover:scale-105 active:scale-95'
                             } ${wasJustAdded ? 'animate-pulse' : ''}`}
                             onClick={handleAddToCart}
@@ -181,6 +197,7 @@ export function ProductsPage() {
                 <div className="mt-6 flex justify-end">
                   <Link
                     to={`/categories/${encodeURIComponent(group.category)}`}
+                    state={{ from: location.pathname }}
                     className="text-sm font-semibold text-slate-300 hover:text-white transition-colors"
                     aria-label={`View all ${group.category} games`}
                   >

@@ -13,8 +13,6 @@ import {
   selectTotalItems,
 } from "../features/cart/selectors";
 import {
-  decreaseQuantity,
-  increaseQuantity,
   removeFromCart,
 } from "../features/cart/cartSlice";
 
@@ -95,32 +93,7 @@ export function CartOverlay({ isOpen, onClose }: Props) {
                 <div className="flex-1 flex flex-col justify-between min-w-0">
                   <div>
                     <h3 className="font-bold text-white break-words">{item.name}</h3>
-                    <p className="text-sm text-slate-400 mt-1">
-                      {formatUsd(item.price)} each
-                    </p>
-                  </div>
-
-                  {/* Quantity Controls */}
-                  <div className="flex items-center gap-3 mt-2">
-                    <button
-                      type="button"
-                      className="rounded-md bg-slate-700 hover:bg-slate-600 text-white w-8 h-8 flex items-center justify-center transition-colors flex-shrink-0"
-                      onClick={() => dispatch(decreaseQuantity(item.id))}
-                      aria-label={`Decrease quantity of ${item.name}`}
-                    >
-                      −
-                    </button>
-                    <span className="text-white font-semibold min-w-[2rem] text-center">
-                      {item.quantity}
-                    </span>
-                    <button
-                      type="button"
-                      className="rounded-md bg-slate-700 hover:bg-slate-600 text-white w-8 h-8 flex items-center justify-center transition-colors flex-shrink-0"
-                      onClick={() => dispatch(increaseQuantity(item.id))}
-                      aria-label={`Increase quantity of ${item.name}`}
-                    >
-                      +
-                    </button>
+                    <p className="text-sm text-slate-400 mt-1">{formatUsd(item.price)}</p>
                   </div>
                 </div>
 
@@ -128,7 +101,7 @@ export function CartOverlay({ isOpen, onClose }: Props) {
                 <div className="flex sm:flex-col items-center sm:items-end justify-between sm:justify-between flex-shrink-0">
                   <div className="text-right">
                     <div className="text-lg font-bold text-transparent bg-clip-text bg-gradient-to-r from-yellow-400 to-orange-400 whitespace-nowrap">
-                      {formatUsd(item.price * item.quantity)}
+                      {formatUsd(item.price)}
                     </div>
                   </div>
                   <button

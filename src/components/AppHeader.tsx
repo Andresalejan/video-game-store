@@ -7,7 +7,7 @@
  */
 
 import { useMemo, useRef, useState } from "react";
-import { Link, useNavigate } from "react-router-dom";
+import { Link, useLocation, useNavigate } from "react-router-dom";
 import { useAppSelector } from "../app/hooks";
 import { selectTotalItems } from "../features/cart/selectors";
 import { categories, products } from "../data/products";
@@ -21,6 +21,7 @@ export function AppHeader({ onCartClick }: Props) {
   // Derived from Redux state, so it updates automatically when cart changes.
   const totalItems = useAppSelector(selectTotalItems);
   const navigate = useNavigate();
+  const location = useLocation();
 
   const [query, setQuery] = useState("");
   const [isSearchOpen, setIsSearchOpen] = useState(false);
@@ -80,6 +81,7 @@ export function AppHeader({ onCartClick }: Props) {
                     <Link
                       key={category}
                       to={`/categories/${encodeURIComponent(category)}`}
+                      state={{ from: location.pathname }}
                       className="block rounded-lg px-3 py-2 text-sm font-semibold text-slate-200 hover:bg-slate-800/70 hover:text-white transition-colors"
                       role="menuitem"
                     >
@@ -139,7 +141,9 @@ export function AppHeader({ onCartClick }: Props) {
                         onClick={() => {
                           setQuery("");
                           closeSearch();
-                          navigate(`/categories/${encodeURIComponent(p.category)}`);
+                          navigate(`/games/${encodeURIComponent(p.id)}`, {
+                            state: { from: location.pathname },
+                          });
                         }}
                       >
                         <div className="text-sm font-semibold text-slate-100">

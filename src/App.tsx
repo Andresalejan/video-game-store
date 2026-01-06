@@ -21,6 +21,7 @@ import { useEffect } from "react";
 import { LandingPage } from "./pages/LandingPage";
 import { CategoriesPage } from "./pages/CategoriesPage";
 import { CategoryProductsPage } from "./pages/CategoryProductsPage";
+import { GameProfilePage } from "./pages/GameProfilePage";
 import { ProductsPage } from "./pages/ProductsPage";
 
 function ScrollToTop() {
@@ -47,6 +48,7 @@ export default function App() {
           <Route path="/products" element={<ProductsPage />} />
           <Route path="/categories" element={<CategoriesPage />} />
           <Route path="/categories/:category" element={<CategoryProductsPage />} />
+          <Route path="/games/:id" element={<GameProfilePage />} />
           {/* Any unknown URL goes back to landing */}
           <Route path="*" element={<Navigate to="/" replace />} />
         </Routes>

@@ -1,10 +1,10 @@
 import { useMemo, useState } from "react";
-import { Link, useParams } from "react-router-dom";
+import { Link, useLocation, useParams } from "react-router-dom";
 import { AppHeader } from "../components/AppHeader";
 import { CartOverlay } from "../components/CartOverlay";
 import { products, categories } from "../data/products";
 import { useAppDispatch, useAppSelector } from "../app/hooks";
-import { addToCart } from "../features/cart/cartSlice";
+import { addToCart, removeFromCart } from "../features/cart/cartSlice";
 import { selectCartItems } from "../features/cart/selectors";
 
 const productsBgUrl = `${import.meta.env.BASE_URL}cyberpunk-products.png`;
@@ -20,6 +20,10 @@ export function CategoryProductsPage() {
   const { category: rawCategory } = useParams();
   const decodedCategory = rawCategory ? decodeURIComponent(rawCategory) : "";
 
+  const location = useLocation();
+  const navState = location.state as { from?: string } | null;
+  const fromPath = navState?.from;
+
   const dispatch = useAppDispatch();
   const cartItems = useAppSelector(selectCartItems);
   const [justAdded, setJustAdded] = useState<Set<string>>(new Set());
@@ -34,6 +38,26 @@ export function CategoryProductsPage() {
     if (!isKnownCategory) return [];
     return products.filter((p) => p.category === decodedCategory);
   }, [decodedCategory, isKnownCategory]);
+
+  const backLink = useMemo(() => {
+    if (typeof fromPath !== "string" || fromPath.length === 0) {
+      return { to: "/categories", label: "Back to Categories" };
+    }
+
+    if (fromPath === "/products") {
+      return { to: fromPath, label: "Back to Games" };
+    }
+
+    if (fromPath === "/categories" || fromPath.startsWith("/games/")) {
+      return { to: "/categories", label: "Back to Categories" };
+    }
+
+    if (fromPath === "/") {
+      return { to: fromPath, label: "Back Home" };
+    }
+
+    return { to: fromPath, label: "Back" };
+  }, [fromPath]);
 
   return (
     <div className="min-h-full bg-slate-950 relative">
@@ -69,16 +93,10 @@ export function CategoryProductsPage() {
 
             <div className="flex items-center gap-4">
               <Link
-                to="/products"
+                to={backLink.to}
                 className="text-sm font-medium text-slate-300 hover:text-white transition-colors"
               >
-                Back to Games
-              </Link>
-              <Link
-                to="/categories"
-                className="text-sm font-medium text-slate-300 hover:text-white transition-colors"
-              >
-                Back to Categories
+                {backLink.label}
               </Link>
             </div>
           </div>
@@ -91,7 +109,11 @@ export function CategoryProductsPage() {
                   const wasJustAdded = justAdded.has(product.id);
 
                   const handleAddToCart = () => {
-                    if (isInCart) return;
+                    if (isInCart) {
+                      dispatch(removeFromCart(product.id));
+                      return;
+                    }
+
                     dispatch(addToCart(product));
                     setJustAdded((prev) => new Set(prev).add(product.id));
                     setTimeout(() => {
@@ -120,18 +142,29 @@ export function CategoryProductsPage() {
                         </Link>
 
                         <div className="relative rounded-lg overflow-hidden border-2 border-purple-500/40 group-hover:border-purple-400/60 transition-colors h-48 bg-gradient-to-br from-slate-800 to-slate-900">
-                          <img
-                            src={product.image}
-                            alt={product.name}
-                            className="h-full w-full object-contain group-hover:scale-105 transition-transform duration-500"
-                          />
+                          <Link
+                            to={`/games/${encodeURIComponent(product.id)}`}
+                            state={{ from: location.pathname }}
+                            aria-label={`View ${product.name} profile`}
+                            className="block h-full w-full"
+                          >
+                            <img
+                              src={product.image}
+                              alt={product.name}
+                              className="h-full w-full object-contain group-hover:scale-105 transition-transform duration-500"
+                            />
+                          </Link>
                           <div className="absolute inset-0 bg-gradient-to-t from-slate-900/40 to-transparent pointer-events-none"></div>
                         </div>
 
                         <div className="mt-4 space-y-3">
-                          <div className="font-bold text-lg text-white group-hover:text-transparent group-hover:bg-clip-text group-hover:bg-gradient-to-r group-hover:from-purple-400 group-hover:to-pink-400 transition-all">
+                          <Link
+                            to={`/games/${encodeURIComponent(product.id)}`}
+                            state={{ from: location.pathname }}
+                            className="font-bold text-lg text-white group-hover:text-transparent group-hover:bg-clip-text group-hover:bg-gradient-to-r group-hover:from-purple-400 group-hover:to-pink-400 transition-all"
+                          >
                             {product.name}
-                          </div>
+                          </Link>
 
                           <div className="flex items-center justify-between bg-gradient-to-r from-purple-950/50 to-blue-950/50 rounded-lg p-3 border border-purple-500/30">
                             <span className="text-xs font-semibold text-purple-300 uppercase tracking-wider">
@@ -144,10 +177,9 @@ export function CategoryProductsPage() {
 
                           <button
                             type="button"
-                            disabled={isInCart}
                             className={`w-full py-3 px-4 rounded-lg font-bold text-sm uppercase tracking-wide shadow-lg transition-all duration-300 ${
                               isInCart
-                                ? "bg-gradient-to-r from-green-600 to-emerald-600 cursor-not-allowed scale-100"
+                                ? "bg-gradient-to-r from-green-600 to-emerald-600 hover:from-green-500 hover:to-emerald-500 hover:shadow-emerald-500/30 hover:scale-105 active:scale-95"
                                 : "bg-gradient-to-r from-purple-600 to-pink-600 hover:from-purple-500 hover:to-pink-500 hover:shadow-purple-500/50 hover:scale-105 active:scale-95"
                             } ${wasJustAdded ? "animate-pulse" : ""}`}
                             onClick={handleAddToCart}
