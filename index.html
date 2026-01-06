@@ -4,6 +4,16 @@
     <meta charset="UTF-8" />
     <link rel="icon" type="image/svg+xml" href="/video-game-store/vite.svg" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <style>
+      /* Prevent a white flash before the app/CSS loads (notably on refresh). */
+      html,
+      body {
+        height: 100%;
+        margin: 0;
+        background: rgb(2 6 23);
+        color: rgb(248 250 252);
+      }
+    </style>
     <script>
       // GitHub Pages SPA fallback: if we were redirected from /404.html with a
       // stored path, restore it so React Router can handle the route.
