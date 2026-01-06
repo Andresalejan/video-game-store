@@ -1,5 +1,5 @@
 import { useNavigate } from "react-router-dom";
-import { RainOverlay } from "../components/RainOverlay.tsx";
+import { RainOverlay } from "../components/RainOverlay";
 
 const landingBgUrl = `${import.meta.env.BASE_URL}cyberpunk-city.png`;
 

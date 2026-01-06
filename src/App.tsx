@@ -2,8 +2,8 @@
  * App router.
  *
  * Purpose:
- * - Defines the 3 required pages (Landing, Products, Cart).
- * - Keeps page navigation as URL routes.
+ * - Defines the required pages (Landing, Products).
+ * - Cart is now handled as an overlay on the Products page.
  *
  * Note about GitHub Pages:
  * - `basename={import.meta.env.BASE_URL}` helps when the app is served from a
@@ -18,7 +18,6 @@ import {
 } from "react-router-dom";
 import { LandingPage } from "./pages/LandingPage";
 import { ProductsPage } from "./pages/ProductsPage";
-import { CartPage } from "./pages/CartPage";
 
 export default function App() {
   return (
@@ -29,7 +28,6 @@ export default function App() {
           <Route path="/" element={<LandingPage />} />
           {/* Store pages */}
           <Route path="/products" element={<ProductsPage />} />
-          <Route path="/cart" element={<CartPage />} />
           {/* Any unknown URL goes back to landing */}
           <Route path="*" element={<Navigate to="/" replace />} />
         </Routes>

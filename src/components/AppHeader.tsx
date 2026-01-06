@@ -2,21 +2,22 @@
  * App header.
  *
  * Requirements it satisfies:
- * - Shows navigation between Products and Cart.
+ * - Shows navigation and app branding.
  * - Shows a shopping cart icon with a badge that updates dynamically.
  */
 
-import { Link, useLocation } from "react-router-dom";
+import { Link } from "react-router-dom";
 import { useAppSelector } from "../app/hooks";
 import { selectTotalItems } from "../features/cart/selectors";
 import { CartIcon } from "./CartIcon";
 
-export function AppHeader() {
-  const location = useLocation();
+type Props = {
+  onCartClick?: () => void;
+};
+
+export function AppHeader({ onCartClick }: Props) {
   // Derived from Redux state, so it updates automatically when cart changes.
   const totalItems = useAppSelector(selectTotalItems);
-
-  const onCartPage = location.pathname.startsWith("/cart");
 
   return (
     <header className="border-b border-slate-700/30 bg-slate-900/90 backdrop-blur">
@@ -26,38 +27,18 @@ export function AppHeader() {
         </Link>
 
         <nav className="flex items-center gap-4">
-          {onCartPage ? (
-            <Link
-              to="/products"
-              className="text-sm font-medium text-slate-300 hover:text-white transition-colors"
-            >
-              Continue Shopping
-            </Link>
-          ) : (
-            <Link
-              to="/cart"
+          {onCartClick && (
+            <button
+              onClick={onCartClick}
               className="relative inline-flex items-center gap-2 text-sm font-medium text-slate-300 hover:text-white transition-colors"
               aria-label={`Shopping cart, ${totalItems} items`}
             >
               <CartIcon className="h-6 w-6" />
               <span className="hidden sm:inline">Cart</span>
-              <span className="absolute -right-2 -top-2 inline-flex h-5 min-w-5 items-center justify-center rounded-full bg-blue-600 px-1 text-xs font-semibold text-white">
+              <span className="absolute -right-2 -top-2 inline-flex h-5 min-w-5 items-center justify-center rounded-full bg-gradient-to-r from-purple-600 to-pink-600 px-1 text-xs font-semibold text-white shadow-lg">
                 {totalItems}
               </span>
-            </Link>
-          )}
-
-          {onCartPage && (
-            <div
-              className="relative inline-flex items-center gap-2 text-sm font-medium text-slate-300"
-              aria-label={`Shopping cart, ${totalItems} items`}
-            >
-              <CartIcon className="h-6 w-6" />
-              <span className="hidden sm:inline">Cart</span>
-              <span className="absolute -right-2 -top-2 inline-flex h-5 min-w-5 items-center justify-center rounded-full bg-blue-600 px-1 text-xs font-semibold text-white">
-                {totalItems}
-              </span>
-            </div>
+            </button>
           )}
         </nav>
       </div>
