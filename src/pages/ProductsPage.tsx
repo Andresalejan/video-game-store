@@ -7,7 +7,7 @@
  * - Includes header with dynamic cart badge
  */
 
-import { useMemo, useState } from "react";
+import { useMemo, useState, useEffect } from "react";
 import { Link, useLocation } from "react-router-dom";
 import { AppHeader } from "../components/AppHeader";
 import { CartOverlay } from "../components/CartOverlay";
@@ -31,6 +31,13 @@ export function ProductsPage() {
   const location = useLocation();
   const [justAdded, setJustAdded] = useState<Set<string>>(new Set());
   const [isCartOpen, setIsCartOpen] = useState(false);
+  const [loading, setLoading] = useState(true);
+
+  useEffect(() => {
+    const img = new window.Image();
+    img.src = productsBgUrl;
+    img.onload = () => setLoading(false);
+  }, []);
 
   const grouped = useMemo(() => {
     // Build a stable list of {category, items} so rendering is straightforward.
@@ -42,6 +49,12 @@ export function ProductsPage() {
 
   return (
     <div className="min-h-full bg-slate-950 relative">
+      {/* Spinner Overlay */}
+      {loading && (
+        <div className="fixed inset-0 z-[100] flex items-center justify-center bg-slate-950">
+          <div className="animate-spin rounded-full h-16 w-16 border-t-4 border-b-4 border-purple-500"></div>
+        </div>
+      )}
       {/* Background Image */}
       <div
         className="fixed inset-0 bg-cover bg-center"

@@ -1,3 +1,5 @@
+
+import React, { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { RainOverlay } from "../components/RainOverlay";
 
@@ -5,6 +7,13 @@ const landingBgUrl = `${import.meta.env.BASE_URL}cyberpunk-city.png`;
 
 export function LandingPage() {
   const navigate = useNavigate();
+  const [loading, setLoading] = useState(true);
+
+  useEffect(() => {
+    const img = new window.Image();
+    img.src = landingBgUrl;
+    img.onload = () => setLoading(false);
+  }, []);
 
   const handleStartClick = (e: React.MouseEvent) => {
     e.preventDefault();
@@ -19,6 +28,13 @@ export function LandingPage() {
 
   return (
     <div className="relative min-h-screen overflow-hidden bg-slate-950">
+      {/* Spinner Overlay */}
+      {loading && (
+        <div className="fixed inset-0 z-[100] flex items-center justify-center bg-slate-950">
+          <div className="animate-spin rounded-full h-16 w-16 border-t-4 border-b-4 border-purple-500"></div>
+        </div>
+      )}
+
       {/* Backdrop */}
       <div
         className="absolute inset-0 bg-cover bg-center animate-fade-in-bg"
