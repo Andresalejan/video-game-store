@@ -47,7 +47,7 @@ export function GameProfilePage() {
         </div>
         <CartOverlay isOpen={isCartOpen} onClose={() => setIsCartOpen(false)} />
 
-        <main className="mx-auto max-w-5xl px-4 py-8 animate-slide-up">
+        <main key={id} className="mx-auto max-w-5xl px-4 py-8 animate-slide-up">
           <div className="flex items-center justify-between gap-4">
             <div>
               <h2 className="text-2xl font-semibold text-white">
