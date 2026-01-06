@@ -6,7 +6,7 @@
  * - Shows a shopping cart icon with a badge that updates dynamically.
  */
 
-import { useMemo, useRef, useState } from "react";
+import React, { useMemo, useRef, useState } from "react";
 import { Link, useLocation, useNavigate } from "react-router-dom";
 import { useAppSelector } from "../app/hooks";
 import { selectTotalItems } from "../features/cart/selectors";
@@ -26,16 +26,36 @@ export function AppHeader({ onCartClick }: Props) {
   const [query, setQuery] = useState("");
   const [isSearchOpen, setIsSearchOpen] = useState(false);
   const [isCategoriesMenuOpen, setIsCategoriesMenuOpen] = useState(false);
+  const [highlightedIndex, setHighlightedIndex] = useState(-1);
   const blurTimeoutRef = useRef<number | null>(null);
+  const resultsContainerRef = useRef<HTMLDivElement | null>(null);
+  const resultRefs = useRef<(HTMLButtonElement | null)[]>([]);
 
   const results = useMemo(() => {
     const q = query.trim().toLowerCase();
     if (!q) return [];
-
     return products
       .filter((p) => p.name.toLowerCase().includes(q))
       .slice(0, 10);
   }, [query]);
+
+  // Reset highlight when query changes
+  React.useEffect(() => {
+    setHighlightedIndex(results.length > 0 ? 0 : -1);
+  }, [query, results.length]);
+
+  // Scroll highlighted result into view
+  React.useEffect(() => {
+    if (
+      highlightedIndex >= 0 &&
+      resultRefs.current[highlightedIndex]
+    ) {
+      resultRefs.current[highlightedIndex]?.scrollIntoView({
+        block: "nearest",
+        behavior: "smooth",
+      });
+    }
+  }, [highlightedIndex]);
 
   const closeSearch = () => {
     setIsSearchOpen(false);
@@ -130,6 +150,25 @@ export function AppHeader({ onCartClick }: Props) {
                     closeSearch();
                   }, 120);
                 }}
+                onKeyDown={(e) => {
+                  if (!isSearchOpen || results.length === 0) return;
+                  if (e.key === "ArrowDown") {
+                    e.preventDefault();
+                    setHighlightedIndex((prev) => (prev + 1) % results.length);
+                  } else if (e.key === "ArrowUp") {
+                    e.preventDefault();
+                    setHighlightedIndex((prev) => (prev - 1 + results.length) % results.length);
+                  } else if (e.key === "Enter") {
+                    if (highlightedIndex >= 0 && highlightedIndex < results.length) {
+                      const p = results[highlightedIndex];
+                      setQuery("");
+                      closeSearch();
+                      navigate(`/games/${encodeURIComponent(p.id)}`, {
+                        state: { from: location.pathname },
+                      });
+                    }
+                  }
+                }}
                 type="text"
                 placeholder="Search games"
                 className="w-full rounded-lg border border-slate-700/50 bg-slate-950/40 px-3 py-2 text-sm text-slate-100 placeholder:text-slate-400/70 focus:outline-none focus:ring-2 focus:ring-white/20"
@@ -139,21 +178,32 @@ export function AppHeader({ onCartClick }: Props) {
 
               {isSearchOpen && query.trim().length > 0 && (
                 <div className="absolute left-0 top-full mt-2 w-full rounded-xl border border-slate-700/40 bg-slate-900/95 backdrop-blur shadow-lg overflow-hidden">
-                  <div className="max-h-72 overflow-y-auto">
+                  <div
+                    className="max-h-72 overflow-y-auto"
+                    ref={resultsContainerRef}
+                  >
                     {results.length === 0 ? (
                       <div className="px-4 py-3 text-sm text-slate-300">
                         No results
                       </div>
                     ) : (
-                      results.map((p) => (
+                      results.map((p, idx) => (
                         <button
                           key={p.id}
                           type="button"
-                          className="w-full text-left px-4 py-3 hover:bg-slate-800/70 transition-colors"
+                          ref={el => {
+                            resultRefs.current[idx] = el;
+                          }}
+                          className={`w-full text-left px-4 py-3 transition-colors ${
+                            idx === highlightedIndex
+                              ? "bg-purple-700/40 text-white"
+                              : "hover:bg-slate-800/70"
+                          }`}
                           onMouseDown={(e) => {
                             // Prevent input blur before click handler.
                             e.preventDefault();
                           }}
+                          onMouseEnter={() => setHighlightedIndex(idx)}
                           onClick={() => {
                             setQuery("");
                             closeSearch();
