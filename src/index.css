@@ -127,4 +127,28 @@ body,
 
 body {
   margin: 0;
+  /* Prevent scrollbar from causing layout shifts */
+  overflow-x: hidden;
+}
+
+/* Fixed background that doesn't resize on mobile scroll */
+.bg-fixed-mobile {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  /* Use explicit height instead of viewport units to prevent recalculation */
+  min-height: 100vh;
+  min-height: 100dvh; /* Use dynamic viewport height for modern browsers */
+  /* Force hardware acceleration and prevent repaints */
+  transform: translate3d(0, 0, 0);
+  -webkit-transform: translate3d(0, 0, 0);
+  backface-visibility: hidden;
+  -webkit-backface-visibility: hidden;
+  /* Prevent background from shifting */
+  background-attachment: scroll;
+  /* Optimize rendering */
+  will-change: auto;
+  pointer-events: none;
 }

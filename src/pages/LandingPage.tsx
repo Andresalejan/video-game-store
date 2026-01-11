@@ -37,7 +37,7 @@ export function LandingPage() {
 
       {/* Backdrop */}
       <div
-        className="absolute inset-0 bg-cover bg-center animate-fade-in-bg"
+        className="bg-fixed-mobile bg-cover bg-center animate-fade-in-bg"
         style={{ backgroundImage: `url(${landingBgUrl})` }}
         aria-hidden="true"
       />
@@ -47,7 +47,7 @@ export function LandingPage() {
 
       {/* Contrast overlay */}
       <div
-        className="absolute inset-0 bg-gradient-to-b from-slate-950/60 via-slate-950/60 to-slate-950/80 animate-fade-in-overlay"
+        className="bg-fixed-mobile bg-gradient-to-b from-slate-950/60 via-slate-950/60 to-slate-950/80 animate-fade-in-overlay"
         style={{ zIndex: 2 }}
         aria-hidden="true"
       />
