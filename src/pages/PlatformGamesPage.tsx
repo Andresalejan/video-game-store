@@ -4,17 +4,19 @@ import { useNavigate } from "react-router-dom";
 import { AppHeader } from "../components/AppHeader";
 import { CartOverlay } from "../components/CartOverlay";
 import { GameCard } from "../components/GameCard";
-import { products, categories } from "../data/products";
+import { products } from "../data/products";
 import { useAppDispatch, useAppSelector } from "../app/hooks";
 import { addToCart, removeFromCart, type Platform } from "../features/cart/cartSlice";
 import { selectCartItems } from "../features/cart/selectors";
 
 const productsBgUrl = `${import.meta.env.BASE_URL}cyberpunk-products.png`;
 
-export function CategoryProductsPage() {
-    const navigate = useNavigate();
-  const { category: rawCategory } = useParams();
-  const decodedCategory = rawCategory ? decodeURIComponent(rawCategory) : "";
+const allPlatforms: Platform[] = ["PC", "Xbox", "PS5", "Switch 2"];
+
+export function PlatformGamesPage() {
+  const navigate = useNavigate();
+  const { platform: rawPlatform } = useParams();
+  const decodedPlatform = rawPlatform ? decodeURIComponent(rawPlatform) : "";
 
   const dispatch = useAppDispatch();
   const cartItems = useAppSelector(selectCartItems);
@@ -22,17 +24,15 @@ export function CategoryProductsPage() {
   const [isCartOpen, setIsCartOpen] = useState(false);
   const [selectedPlatforms, setSelectedPlatforms] = useState<Record<string, Platform>>({});
 
-  const isKnownCategory = useMemo(
-    () => categories.includes(decodedCategory),
-    [decodedCategory]
+  const isKnownPlatform = useMemo(
+    () => allPlatforms.includes(decodedPlatform as Platform),
+    [decodedPlatform]
   );
 
   const items = useMemo(() => {
-    if (!isKnownCategory) return [];
-    return products.filter((p) => p.category === decodedCategory);
-  }, [decodedCategory, isKnownCategory]);
-
-  // Remove backLink logic, use Back button instead
+    if (!isKnownPlatform) return [];
+    return products.filter((p) => p.platformPrices[decodedPlatform as Platform]);
+  }, [decodedPlatform, isKnownPlatform]);
 
   return (
     <div className="min-h-full bg-slate-950 relative">
@@ -54,18 +54,18 @@ export function CategoryProductsPage() {
         <CartOverlay isOpen={isCartOpen} onClose={() => setIsCartOpen(false)} />
 
         <main
-          key={decodedCategory}
+          key={decodedPlatform}
           className="mx-auto max-w-5xl px-4 py-8 animate-slide-up"
         >
           <div className="flex items-center justify-between gap-4">
             <div>
               <h2 className="text-2xl font-semibold text-white">
-                {isKnownCategory ? decodedCategory : "Category not found"}
+                {isKnownPlatform ? decodedPlatform : "Platform not found"}
               </h2>
               <p className="mt-2 text-sm text-slate-300">
-                {isKnownCategory
-                  ? "All games in this category."
-                  : "This category doesn’t exist."}
+                {isKnownPlatform
+                  ? `All games available on ${decodedPlatform}.`
+                  : "This platform doesn't exist."}
               </p>
             </div>
 
@@ -80,11 +80,11 @@ export function CategoryProductsPage() {
             </div>
           </div>
 
-          {isKnownCategory && (
+          {isKnownPlatform && (
             <div className="mt-8">
               <div className="mt-4 grid grid-cols-1 gap-6 sm:grid-cols-2 lg:grid-cols-3">
                 {items.map((product) => {
-                  const selectedPlatform = selectedPlatforms[product.id] || "PC";
+                  const selectedPlatform = selectedPlatforms[product.id] || (decodedPlatform as Platform);
                   const platformsInCart = cartItems
                     .filter(item => item.id === product.id)
                     .map(item => item.platform);
@@ -129,12 +129,6 @@ export function CategoryProductsPage() {
                   );
                 })}
               </div>
-            </div>
-          )}
-
-          {!isKnownCategory && (
-            <div className="mt-8 rounded-lg border border-slate-700/40 bg-slate-900/60 p-4 text-sm text-slate-300">
-              Try selecting a category from the list.
             </div>
           )}
         </main>

@@ -23,6 +23,8 @@ import { CategoriesPage } from "./pages/CategoriesPage";
 import { CategoryProductsPage } from "./pages/CategoryProductsPage";
 import { GameProfilePage } from "./pages/GameProfilePage";
 import { ProductsPage } from "./pages/ProductsPage";
+import { PlatformsPage } from "./pages/PlatformsPage";
+import { PlatformGamesPage } from "./pages/PlatformGamesPage";
 
 function ScrollToTop() {
   const location = useLocation();
@@ -48,6 +50,8 @@ export default function App() {
           <Route path="/products" element={<ProductsPage />} />
           <Route path="/categories" element={<CategoriesPage />} />
           <Route path="/categories/:category" element={<CategoryProductsPage />} />
+          <Route path="/platforms" element={<PlatformsPage />} />
+          <Route path="/platforms/:platform" element={<PlatformGamesPage />} />
           <Route path="/games/:id" element={<GameProfilePage />} />
           {/* Any unknown URL goes back to landing */}
           <Route path="*" element={<Navigate to="/" replace />} />

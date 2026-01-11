@@ -10,9 +10,9 @@ import type { RootState } from "../../app/store";
 
 export const selectCartItems = (state: RootState) => state.cart.items;
 
-// Total items in cart (1 per game). Used for the header badge + cart summary.
+// Total items in cart (1 per game + platform combo). Used for the header badge + cart summary.
 export const selectTotalItems = (state: RootState) => state.cart.items.length;
 
-// Total dollar cost across all cart items.
+// Total dollar cost across all cart items using selectedPrice.
 export const selectTotalCost = (state: RootState) =>
-  state.cart.items.reduce((sum, item) => sum + item.price, 0);
+  state.cart.items.reduce((sum, item) => sum + item.selectedPrice, 0);

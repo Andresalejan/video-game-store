@@ -12,6 +12,9 @@ import { useAppSelector } from "../app/hooks";
 import { selectTotalItems } from "../features/cart/selectors";
 import { categories, products } from "../data/products";
 import { CartIcon } from "./CartIcon";
+import type { Platform } from "../features/cart/cartSlice";
+
+const platforms: Platform[] = ["PC", "Xbox", "PS5", "Switch 2"];
 
 type Props = {
   onCartClick?: () => void;
@@ -26,6 +29,7 @@ export function AppHeader({ onCartClick }: Props) {
   const [query, setQuery] = useState("");
   const [isSearchOpen, setIsSearchOpen] = useState(false);
   const [isCategoriesMenuOpen, setIsCategoriesMenuOpen] = useState(false);
+  const [isPlatformsMenuOpen, setIsPlatformsMenuOpen] = useState(false);
   const [highlightedIndex, setHighlightedIndex] = useState(-1);
   const blurTimeoutRef = useRef<number | null>(null);
   const resultsContainerRef = useRef<HTMLDivElement | null>(null);
@@ -68,13 +72,19 @@ export function AppHeader({ onCartClick }: Props) {
           Pixel Paradise
         </Link>
 
-        {/* Categories (mobile link) */}
-        <div className="justify-self-end md:hidden">
+        {/* Categories & Platforms (mobile links) */}
+        <div className="justify-self-end md:hidden flex items-center gap-3">
           <Link
             to="/categories"
-            className="md:hidden text-sm font-medium text-slate-300 hover:text-white transition-colors"
+            className="text-sm font-medium text-slate-300 hover:text-white transition-colors"
           >
             Categories
+          </Link>
+          <Link
+            to="/platforms"
+            className="text-sm font-medium text-slate-300 hover:text-white transition-colors"
+          >
+            Platforms
           </Link>
         </div>
 
@@ -82,32 +92,26 @@ export function AppHeader({ onCartClick }: Props) {
         <div className="col-span-full row-start-2 md:col-span-1 md:col-start-2 md:row-start-1 md:justify-self-end">
           <div className="flex items-center gap-4 md:justify-end">
             <div className="hidden md:flex items-center gap-3 text-sm">
-              <div 
-                className="relative"
-                onMouseEnter={() => setIsCategoriesMenuOpen(true)}
-                onMouseLeave={() => setIsCategoriesMenuOpen(false)}
-              >
+              <div className="relative">
                 <Link
                   to="/categories"
                   className="font-medium text-slate-300 hover:text-white transition-colors"
                   aria-haspopup="menu"
+                  onMouseEnter={() => setIsCategoriesMenuOpen(true)}
+                  onMouseLeave={() => setIsCategoriesMenuOpen(false)}
                   onFocus={() => setIsCategoriesMenuOpen(true)}
                   onBlur={() => setIsCategoriesMenuOpen(false)}
                 >
                   Categories
                 </Link>
 
-                {/* Hover/focus bridge: keeps the menu open while moving from the link into the dropdown */}
-                <div
-                  className="absolute right-0 top-full z-[55] h-4 w-56"
-                  aria-hidden="true"
-                />
-
                 {isCategoriesMenuOpen && (
                   <div
                     className="absolute right-0 top-full z-[60] w-56 pt-2 transition-all duration-150"
                     role="menu"
                     aria-label="Categories"
+                    onMouseEnter={() => setIsCategoriesMenuOpen(true)}
+                    onMouseLeave={() => setIsCategoriesMenuOpen(false)}
                   >
                     <div className="rounded-xl border border-slate-700/40 bg-slate-900/95 backdrop-blur shadow-lg p-2">
                       {categories.map((category) => (
@@ -122,6 +126,47 @@ export function AppHeader({ onCartClick }: Props) {
                           }}
                         >
                           {category}
+                        </Link>
+                      ))}
+                    </div>
+                  </div>
+                )}
+              </div>
+
+              <div className="relative">
+                <Link
+                  to="/platforms"
+                  className="font-medium text-slate-300 hover:text-white transition-colors"
+                  aria-haspopup="menu"
+                  onMouseEnter={() => setIsPlatformsMenuOpen(true)}
+                  onMouseLeave={() => setIsPlatformsMenuOpen(false)}
+                  onFocus={() => setIsPlatformsMenuOpen(true)}
+                  onBlur={() => setIsPlatformsMenuOpen(false)}
+                >
+                  Platforms
+                </Link>
+
+                {isPlatformsMenuOpen && (
+                  <div
+                    className="absolute right-0 top-full z-[60] w-56 pt-2 transition-all duration-150"
+                    role="menu"
+                    aria-label="Platforms"
+                    onMouseEnter={() => setIsPlatformsMenuOpen(true)}
+                    onMouseLeave={() => setIsPlatformsMenuOpen(false)}
+                  >
+                    <div className="rounded-xl border border-slate-700/40 bg-slate-900/95 backdrop-blur shadow-lg p-2">
+                      {platforms.map((platform) => (
+                        <Link
+                          key={platform}
+                          to={`/platforms/${encodeURIComponent(platform)}`}
+                          state={{ from: location.pathname }}
+                          className="block rounded-lg px-3 py-2 text-sm font-semibold text-slate-200 hover:bg-slate-800/70 hover:text-white transition-colors"
+                          role="menuitem"
+                          onClick={() => {
+                            setIsPlatformsMenuOpen(false);
+                          }}
+                        >
+                          {platform}
                         </Link>
                       ))}
                     </div>

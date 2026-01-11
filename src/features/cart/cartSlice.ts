@@ -13,6 +13,8 @@
 
 import { createSlice, type PayloadAction } from "@reduxjs/toolkit";
 
+export type Platform = "PC" | "Xbox" | "PS5" | "Switch 2";
+
 export type Product = {
   id: string;
   name: string;
@@ -20,9 +22,13 @@ export type Product = {
   category: string;
   image: string;
   description: string;
+  platformPrices: Record<Platform, number>;
 };
 
-export type CartItem = Product;
+export type CartItem = Product & {
+  platform: Platform;
+  selectedPrice: number;
+};
 
 type CartState = {
   items: CartItem[];
@@ -36,19 +42,38 @@ const cartSlice = createSlice({
   name: "cart",
   initialState,
   reducers: {
-    // Toggle a product in the cart: if it exists, remove it; otherwise add it.
-    addToCart(state, action: PayloadAction<Product>) {
-      const existing = state.items.find((item) => item.id === action.payload.id);
+    // Add a product with a specific platform to the cart.
+    addToCart(state, action: PayloadAction<{ product: Product; platform: Platform }>) {
+      const { product, platform } = action.payload;
+      const selectedPrice = product.platformPrices[platform];
+      
+      // Check if this exact product + platform combo already exists
+      const existing = state.items.find(
+        (item) => item.id === product.id && item.platform === platform
+      );
+      
       if (existing) {
-        state.items = state.items.filter((item) => item.id !== action.payload.id);
+        // If it exists, remove it (toggle behavior)
+        state.items = state.items.filter(
+          (item) => !(item.id === product.id && item.platform === platform)
+        );
         return;
       }
-      state.items.push(action.payload);
+      
+      // Add new item with platform and selected price
+      state.items.push({
+        ...product,
+        platform,
+        selectedPrice,
+      });
     },
 
-    // Remove an item from the cart.
-    removeFromCart(state, action: PayloadAction<string>) {
-      state.items = state.items.filter((item) => item.id !== action.payload);
+    // Remove an item from the cart by id and platform.
+    removeFromCart(state, action: PayloadAction<{ id: string; platform: Platform }>) {
+      const { id, platform } = action.payload;
+      state.items = state.items.filter(
+        (item) => !(item.id === id && item.platform === platform)
+      );
     },
   },
 });

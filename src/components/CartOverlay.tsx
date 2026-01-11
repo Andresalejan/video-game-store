@@ -79,7 +79,7 @@ export function CartOverlay({ isOpen, onClose }: Props) {
           ) : (
             items.map((item) => (
               <div
-                key={item.id}
+                key={`${item.id}-${item.platform}`}
                 className="flex flex-col sm:flex-row gap-4 rounded-xl border border-purple-500/30 bg-slate-800/50 p-4 hover:border-purple-400/50 transition-colors"
               >
                 {/* Game Image */}
@@ -93,7 +93,12 @@ export function CartOverlay({ isOpen, onClose }: Props) {
                 <div className="flex-1 flex flex-col justify-between min-w-0">
                   <div>
                     <h3 className="font-bold text-white break-words">{item.name}</h3>
-                    <p className="text-sm text-slate-400 mt-1">{formatUsd(item.price)}</p>
+                    <div className="flex items-center gap-2 mt-1">
+                      <span className="text-xs px-2 py-1 rounded-full bg-gradient-to-r from-purple-600 to-pink-600 text-white font-semibold">
+                        {item.platform}
+                      </span>
+                    </div>
+                    <p className="text-sm text-slate-400 mt-1">{formatUsd(item.selectedPrice)}</p>
                   </div>
                 </div>
 
@@ -101,14 +106,14 @@ export function CartOverlay({ isOpen, onClose }: Props) {
                 <div className="flex sm:flex-col items-center sm:items-end justify-between sm:justify-between flex-shrink-0">
                   <div className="text-right">
                     <div className="text-lg font-bold text-transparent bg-clip-text bg-gradient-to-r from-yellow-400 to-orange-400 whitespace-nowrap">
-                      {formatUsd(item.price)}
+                      {formatUsd(item.selectedPrice)}
                     </div>
                   </div>
                   <button
                     type="button"
                     className="text-red-400 hover:text-red-300 text-sm font-semibold transition-colors whitespace-nowrap"
-                    onClick={() => dispatch(removeFromCart(item.id))}
-                    aria-label={`Remove ${item.name} from cart`}
+                    onClick={() => dispatch(removeFromCart({ id: item.id, platform: item.platform }))}
+                    aria-label={`Remove ${item.name} (${item.platform}) from cart`}
                   >
                     Remove
                   </button>
