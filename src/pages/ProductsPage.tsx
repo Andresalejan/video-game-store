@@ -52,14 +52,14 @@ export function ProductsPage() {
       )}
       {/* Background Image */}
       <div
-        className="fixed-bg bg-cover bg-center"
+        className="fixed inset-0 bg-cover bg-center"
         style={{ backgroundImage: `url(${productsBgUrl})` }}
         aria-hidden="true"
       />
       
       {/* Dark overlay for readability */}
       <div
-        className="fixed-bg bg-slate-950/80"
+        className="fixed inset-0 bg-slate-950/80"
         aria-hidden="true"
       />
 
