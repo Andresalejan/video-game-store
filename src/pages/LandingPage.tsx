@@ -37,7 +37,7 @@ export function LandingPage() {
 
       {/* Backdrop */}
       <div
-        className="absolute inset-0 bg-cover bg-center animate-fade-in-bg"
+        className="fixed-bg bg-cover bg-center animate-fade-in-bg"
         style={{ backgroundImage: `url(${landingBgUrl})` }}
         aria-hidden="true"
       />

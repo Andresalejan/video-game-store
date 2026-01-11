@@ -40,11 +40,11 @@ export function GameProfilePage() {
   return (
     <div className="min-h-full bg-slate-950 relative">
       <div
-        className="fixed inset-0 bg-cover bg-center"
+        className="fixed-bg bg-cover bg-center"
         style={{ backgroundImage: `url(${productsBgUrl})` }}
         aria-hidden="true"
       />
-      <div className="fixed inset-0 bg-slate-950/80" aria-hidden="true" />
+      <div className="fixed-bg bg-slate-950/80" aria-hidden="true" />
 
       <div className="relative z-10">
         <div className="relative z-50">
