@@ -1,41 +1,44 @@
-import { useMemo, useState } from "react";
-import { useParams } from "react-router-dom";
-import { useNavigate } from "react-router-dom";
+import { useState } from "react";
+import { useParams, useNavigate } from "react-router-dom";
 import { AppHeader } from "../components/AppHeader";
 import { CartOverlay } from "../components/CartOverlay";
 import { GameCard } from "../components/GameCard";
-import { products } from "../data/products";
+import { fetchProducts } from "../api/catalog";
+import { useApi, ErrorMessage } from "../hooks/useApi";
 import { useAppDispatch, useAppSelector } from "../app/hooks";
-import { addToCart, removeFromCart, type Platform } from "../features/cart/cartSlice";
+import { addToCart, removeFromCart, type Platform, type Product } from "../features/cart/cartSlice";
 import { selectCartItems } from "../features/cart/selectors";
 
 const productsBgUrl = `${import.meta.env.BASE_URL}cyberpunk-products.png`;
 
 const allPlatforms: Platform[] = ["PC", "Xbox", "PS5", "Switch 2"];
 
-export function PlatformGamesPage() {
+function PlatformGamesContent({ decodedPlatform }: { decodedPlatform: string }) {
   const navigate = useNavigate();
-  const { platform: rawPlatform } = useParams();
-  const decodedPlatform = rawPlatform ? decodeURIComponent(rawPlatform) : "";
-
   const dispatch = useAppDispatch();
   const cartItems = useAppSelector(selectCartItems);
   const [justAdded, setJustAdded] = useState<Set<string>>(new Set());
   const [isCartOpen, setIsCartOpen] = useState(false);
   const [selectedPlatforms, setSelectedPlatforms] = useState<Record<string, Platform>>({});
 
-  const isKnownPlatform = useMemo(
-    () => allPlatforms.includes(decodedPlatform as Platform),
-    [decodedPlatform]
+  const isKnownPlatform = allPlatforms.includes(decodedPlatform as Platform);
+
+  // Fetch products filtered by platform from API
+  const { data: items, loading, error, refetch } = useApi<Product[]>(
+    () => isKnownPlatform ? fetchProducts({ platform: decodedPlatform as Platform }) : Promise.resolve([]),
+    [decodedPlatform, isKnownPlatform]
   );
 
-  const items = useMemo(() => {
-    if (!isKnownPlatform) return [];
-    return products.filter((p) => p.platformPrices[decodedPlatform as Platform]);
-  }, [decodedPlatform, isKnownPlatform]);
+  const hasProducts = items && items.length > 0;
 
   return (
     <div className="min-h-full bg-slate-950 relative">
+      {/* Loading Overlay */}
+      {loading && (
+        <div className="fixed inset-0 z-[100] flex items-center justify-center bg-slate-950">
+          <div className="animate-spin rounded-full h-16 w-16 border-t-4 border-b-4 border-purple-500"></div>
+        </div>
+      )}
       {/* Background Image */}
       <div
         className="bg-fixed-mobile bg-cover bg-center"
@@ -80,7 +83,13 @@ export function PlatformGamesPage() {
             </div>
           </div>
 
-          {isKnownPlatform && (
+          {error && !loading && (
+            <div className="mt-8">
+              <ErrorMessage message={error} onRetry={refetch} />
+            </div>
+          )}
+
+          {hasProducts && !loading && (
             <div className="mt-8">
               <div className="mt-4 grid grid-cols-1 gap-6 sm:grid-cols-2 lg:grid-cols-3">
                 {items.map((product) => {
@@ -131,8 +140,22 @@ export function PlatformGamesPage() {
               </div>
             </div>
           )}
+
+          {!isKnownPlatform && !loading && (
+            <div className="mt-8 rounded-lg border border-slate-700/40 bg-slate-900/60 p-4 text-sm text-slate-300">
+              This platform doesn't exist. Please select a valid platform.
+            </div>
+          )}
         </main>
       </div>
     </div>
   );
+}
+
+export function PlatformGamesPage() {
+  const { platform: rawPlatform } = useParams();
+  const decodedPlatform = rawPlatform ? decodeURIComponent(rawPlatform) : "";
+  
+  // Use key to reset component state when platform changes
+  return <PlatformGamesContent key={decodedPlatform} decodedPlatform={decodedPlatform} />;
 }

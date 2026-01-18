@@ -12,9 +12,10 @@ import { Link, useLocation } from "react-router-dom";
 import { AppHeader } from "../components/AppHeader";
 import { CartOverlay } from "../components/CartOverlay";
 import { GameCard } from "../components/GameCard";
-import { products, categories } from "../data/products";
+import { fetchProducts, fetchCategories } from "../api/catalog";
+import { useApi, ErrorMessage } from "../hooks/useApi";
 import { useAppDispatch, useAppSelector } from "../app/hooks";
-import { addToCart, removeFromCart, type Platform } from "../features/cart/cartSlice";
+import { addToCart, removeFromCart, type Platform, type Product } from "../features/cart/cartSlice";
 import { selectCartItems } from "../features/cart/selectors";
 
 const productsBgUrl = `${import.meta.env.BASE_URL}cyberpunk-products.png`;
@@ -25,27 +26,42 @@ export function ProductsPage() {
   const location = useLocation();
   const [justAdded, setJustAdded] = useState<Set<string>>(new Set());
   const [isCartOpen, setIsCartOpen] = useState(false);
-  const [loading, setLoading] = useState(true);
+  const [bgLoading, setBgLoading] = useState(true);
   const [selectedPlatforms, setSelectedPlatforms] = useState<Record<string, Platform>>({});
+
+  // Fetch data from API
+  const { data: products, loading: productsLoading, error: productsError, refetch: refetchProducts } = useApi<Product[]>(
+    () => fetchProducts(),
+    []
+  );
+  
+  const { data: categories, loading: categoriesLoading, error: categoriesError, refetch: refetchCategories } = useApi<{ id: string; name: string }[]>(
+    () => fetchCategories(),
+    []
+  );
 
   useEffect(() => {
     const img = new window.Image();
     img.src = productsBgUrl;
-    img.onload = () => setLoading(false);
+    img.onload = () => setBgLoading(false);
   }, []);
 
   const grouped = useMemo(() => {
+    if (!categories || !products) return [];
     // Build a stable list of {category, items} so rendering is straightforward.
-    return categories.map((category) => ({
-      category,
-      items: products.filter((p) => p.category === category).slice(0, 3),
+    return categories.map((cat) => ({
+      category: cat.name,
+      items: products.filter((p) => p.category === cat.name).slice(0, 3),
     }));
-  }, []);
+  }, [categories, products]);
+
+  const isLoading = bgLoading || productsLoading || categoriesLoading;
+  const error = productsError || categoriesError;
 
   return (
     <div className="min-h-full bg-slate-950 relative">
       {/* Spinner Overlay */}
-      {loading && (
+      {isLoading && (
         <div className="fixed inset-0 z-[100] flex items-center justify-center bg-slate-950">
           <div className="animate-spin rounded-full h-16 w-16 border-t-4 border-b-4 border-purple-500"></div>
         </div>
@@ -77,9 +93,22 @@ export function ProductsPage() {
             Pick a category and add games to your cart.
           </p>
 
-          <div className="mt-8 space-y-10">
-            {grouped.map((group) => (
-              <section key={group.category}>
+          {error && !isLoading && (
+            <div className="mt-8">
+              <ErrorMessage 
+                message={error} 
+                onRetry={() => {
+                  refetchProducts();
+                  refetchCategories();
+                }} 
+              />
+            </div>
+          )}
+
+          {!error && !isLoading && (
+            <div className="mt-8 space-y-10">
+              {grouped.map((group) => (
+                <section key={group.category}>
                 <Link
                   to={`/categories/${encodeURIComponent(group.category)}`}
                   state={{ from: location.pathname }}
@@ -153,6 +182,7 @@ export function ProductsPage() {
               </section>
             ))}
           </div>
+          )}
         </main>
       </div>
     </div>

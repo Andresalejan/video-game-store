@@ -1,0 +1,82 @@
+// This is your Prisma schema file,
+// learn more about it in the docs: https://pris.ly/d/prisma-schema
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+/// Game categories (RPG, Indie, Action, etc.)
+model Category {
+  id         String    @id @default(uuid()) @db.Uuid
+  name       String    @unique @db.VarChar(100)
+  created_at DateTime  @default(now()) @db.Timestamptz(6)
+  updated_at DateTime  @updatedAt @db.Timestamptz(6)
+
+  // Relations
+  products   Product[]
+
+  @@map("categories")
+}
+
+/// Gaming platforms (PC, Xbox, PS5, Switch 2)
+model Platform {
+  id         String    @id @default(uuid()) @db.Uuid
+  name       String    @unique @db.VarChar(50)
+  created_at DateTime  @default(now()) @db.Timestamptz(6)
+  updated_at DateTime  @updatedAt @db.Timestamptz(6)
+
+  // Relations
+  product_prices ProductPlatformPrice[]
+
+  @@map("platforms")
+}
+
+/// Game products
+model Product {
+  id          String    @id @default(uuid()) @db.Uuid
+  code        String    @unique @db.VarChar(100) // Original id like "game-elden"
+  name        String    @db.VarChar(255)
+  price       Decimal   @db.Decimal(10, 2) // Base/default price
+  image       String    @db.Text
+  description String    @db.Text
+  created_at  DateTime  @default(now()) @db.Timestamptz(6)
+  updated_at  DateTime  @updatedAt @db.Timestamptz(6)
+
+  // Foreign keys
+  category_id String    @db.Uuid
+
+  // Relations
+  category        Category               @relation(fields: [category_id], references: [id], onDelete: Cascade)
+  platform_prices ProductPlatformPrice[]
+
+  @@index([category_id])
+  @@index([code])
+  @@map("products")
+}
+
+/// Many-to-many relationship between products and platforms with prices
+model ProductPlatformPrice {
+  id          String   @id @default(uuid()) @db.Uuid
+  price       Decimal  @db.Decimal(10, 2)
+  created_at  DateTime @default(now()) @db.Timestamptz(6)
+  updated_at  DateTime @updatedAt @db.Timestamptz(6)
+
+  // Foreign keys
+  product_id  String   @db.Uuid
+  platform_id String   @db.Uuid
+
+  // Relations
+  product     Product  @relation(fields: [product_id], references: [id], onDelete: Cascade)
+  platform    Platform @relation(fields: [platform_id], references: [id], onDelete: Cascade)
+
+  // Unique constraint: each product can have only one price per platform
+  @@unique([product_id, platform_id])
+  @@index([product_id])
+  @@index([platform_id])
+  @@map("product_platform_prices")
+}

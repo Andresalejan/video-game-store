@@ -1,0 +1,21 @@
+services:
+  postgres:
+    image: postgres:16-alpine
+    container_name: gamestore-db
+    restart: unless-stopped
+    environment:
+      POSTGRES_USER: gamestore
+      POSTGRES_PASSWORD: gamestore
+      POSTGRES_DB: gamestore
+    ports:
+      - "5432:5432"
+    volumes:
+      - gamestore_postgres_data:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U gamestore -d gamestore"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+
+volumes:
+  gamestore_postgres_data:
